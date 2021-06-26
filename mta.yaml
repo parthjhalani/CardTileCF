@@ -1,0 +1,88 @@
+_schema-version: "3.2"
+ID: CardTile
+version: 0.0.1
+modules:
+- name: cardtile-approuter
+  type: approuter.nodejs
+  path: cardtile-approuter
+  requires:
+  - name: CardTile_html_repo_runtime
+  - name: uaa_CardTile
+  - name: portal_resources_CardTile
+  parameters:
+    disk-quota: 256M
+    memory: 256M
+- name: CardTile_ui_deployer
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: CardTile_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - CardApp-content.zip
+      name: CardApp
+      target-path: resources/
+    - artifacts:
+      - GeneralApp-content.zip
+      name: GeneralApp
+      target-path: resources/
+- name: CardApp
+  type: html5
+  path: CardApp
+  build-parameters:
+    builder: custom
+    commands:
+    - npm run build
+    supported-platforms: []
+- name: flp
+  type: com.sap.portal.content
+  path: flp
+  requires:
+  - name: portal_resources_CardTile
+  - name: CardTile_html_repo_host
+  - name: CardTile_ui_deployer
+  - name: uaa_CardTile
+  parameters:
+    buildpack: https://github.com/cloudfoundry/nodejs-buildpack/releases/download/v1.6.51/nodejs-buildpack-cflinuxfs3-v1.6.51.zip
+    memory: 128M
+    stack: cflinuxfs3
+- name: GeneralApp
+  type: html5
+  path: GeneralApp
+  build-parameters:
+    builder: custom
+    commands:
+    - npm run build
+    supported-platforms: []
+resources:
+- name: CardTile_html_repo_runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-runtime
+- name: CardTile_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+- name: uaa_CardTile
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: CardTile-xsuaa-service
+    service-plan: application
+- name: portal_resources_CardTile
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: portal
+    service-plan: standard
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm install

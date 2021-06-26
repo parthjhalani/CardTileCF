@@ -1,0 +1,29 @@
+{
+    "_version": "3.0.0",
+    "identification": {
+        "id": "com.solex.GeneralApp", //appID of your GeneralApp
+        "entityType": "businessapp"
+    },
+    "payload": {
+       "visualizations": {
+        "CardApp-Display": { //Intent ID of your CardApp
+            "vizType": "solex.CardApp", // appID of your CardApp
+            "vizConfig": {
+                "sap.app": {
+                    "title": "GeneralApp",
+                    "subTitle": "Custom"
+                },
+                "sap.flp": {
+                        "target": {
+                            "inboundId": "GeneralApp-Display"  //Inbound id of your General App
+                        }
+                    }
+            }
+ 
+        }
+ 
+    }
+ 
+  }
+ 
+}
